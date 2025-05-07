@@ -1,0 +1,93 @@
+// SETUP STATEMENTS (DO NOT MODIFY)
+import express from 'express';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { dirname, join } from 'path';
+import mongoose from 'mongoose';
+
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+app.use(express.json());
+app.use(express.static(join(__dirname, 'client')));
+
+
+import dotenv from 'dotenv';
+dotenv.config();
+const username = process.env.MONGO_DB_USERNAME;
+const password = process.env.MONGO_DB_PASSWORD;
+
+(async () => {
+  try {
+    // Connect to MongoDB
+    await mongoose.connect(`mongodb+srv://${username}:${password}@firstcluster.lldns.mongodb.net/?retryWrites=true&w=majority&appName=FirstCluster`, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+  }
+}
+)();
+
+// END SETUP STATEMENTS
+
+// HANDLERS
+
+import { loginUser } from './_handlers/loginUser.mjs';
+// import { logoutUser } from './_handlers/logoutUser.mjs';
+import { registerUser } from './_handlers/registerUser.mjs';
+// import { getUser, getUserCollection} from './_handlers/getUser.mjs';
+// import { updateUser } from './_handlers/updateUser.mjs';
+// import { deleteUser } from './_handlers/deleteUser.mjs';
+
+// END HANDLERS
+
+// API ROUTES (DO NOT MODIFY)
+app.post('/api/login', loginUser);
+// app.post('/api/logout', logoutUser);
+app.post('/api/register', registerUser);
+// app.get('/api/user/:id', getUserCollection);
+// app.get('/api/user/:id', getUser);
+// app.put('/api/user/:id', updateUser);
+// app.delete('/api/user/:id', deleteUser);
+//END API ROUTES
+
+  
+// HTML PAGE ROUTES
+
+// // Serve static files from the client directory
+// // This is the path to the client directory where your HTML files are located
+// // This is setup so your "client" folder is next to your "_server" folder and not inside it
+const clientPath = join(__dirname, '..', 'client');
+app.use(express.static(clientPath));
+
+// Default "index" route
+app.get('/', (req, res) => {
+  res.sendFile(join(clientPath, 'html', 'index.html'), (err) => {
+    if (err) {
+      res.status(404).send('Page not found');
+    }
+  });
+});
+
+// app.get('/api/hello', (req, res) => {
+//     res.json({ message: 'Hello from the server!' });
+// });
+
+// All other pages
+app.get('/:pageName', (req, res) => {
+  const filePath = join(clientPath, 'html', `${req.params.pageName}.html`);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).send('Page not found');
+    }
+  });
+});
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
