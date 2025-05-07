@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Page</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <h2>Welcome to your Profile</h2>
+
+  <div id="userInfo">
+    <p>Loading user info...</p>
+  </div>
+
+  <form id="updateForm" style="display:none;">
+    <label>
+      Name: <input type="text" id="name" name="name" />
+    </label><br><br>
+
+    <label>
+      Email: <input type="email" id="email" name="email" readonly />
+    </label><br><br>
+
+    <label>
+      Bio: <input type="text" id="bio" name="bio" />
+    </label><br><br>
+
+    <button type="submit">Update Profile</button>
+  </form>
+
+  <button id="editBtn">Edit Profile</button>
+  <button id="logoutBtn">Logout</button>
+
+  <script>
+    const userInfoDiv = document.getElementById('userInfo');
+    const updateForm = document.getElementById('updateForm');
+    const editBtn = document.getElementById('editBtn');
+    let currentUserId = null;
+
+    async function loadUser() {
+      const sessionRes = await fetch('/api/session');
+      if (sessionRes.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const { userId } = await sessionRes.json();
+      const userRes = await fetch(`/api/user/${userId}`);
+      const user = await userRes.json();
+
+      userInfoDiv.innerHTML = `
+        <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p><strong>Bio:</strong> ${user.bio || 'N/A'}</p>
+        <p>Do you want to update your info?</p>
+      `;
+
+      // Pre-fill the form
+      document.getElementById('name').value = user.name || '';
+      document.getElementById('email').value = user.email;
+      document.getElementById('bio').value = user.bio || '';
+    }
+
+    editBtn.addEventListener('click', () => {
+      updateForm.style.display = 'block';
+    });
+
+    document.getElementById('updateForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const bio = document.getElementById('bio').value;
+      
+      // const userId = req.session.userId;
+
+      const res = await fetch(`/api/user/${currentUserId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, bio })
+      });
+
+      const result = await res.json();
+      alert(result.message);
+      loadUser();  // Refresh info
+      updateForm.style.display = 'none';
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    });
+
+    loadUser();
+  </script>
+</body>
+</html>
