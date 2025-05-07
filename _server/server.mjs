@@ -12,11 +12,25 @@ const __dirname = dirname(__filename);
 app.use(express.json());
 app.use(express.static(join(__dirname, 'client')));
 
-
+/* added by me */
+import session from 'express-session';
 import dotenv from 'dotenv';
 dotenv.config();
 const username = process.env.MONGO_DB_USERNAME;
 const password = process.env.MONGO_DB_PASSWORD;
+app.use(session({
+  secret: 'replace-this-with-a-secure-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,            // can't be accessed by JS (secure)
+    maxAge: 1000 * 60 * 60 * 24 * 7,  // 7 days
+    sameSite: 'lax',           // or 'strict' depending on use case
+    secure: false              // true if using HTTPS
+  }
+}));
+
+/* break */
 
 (async () => {
   try {
@@ -37,25 +51,32 @@ const password = process.env.MONGO_DB_PASSWORD;
 // HANDLERS
 
 import { loginUser } from './_handlers/loginUser.mjs';
-// import { logoutUser } from './_handlers/logoutUser.mjs';
+import { logoutUser } from './_handlers/logoutUser.mjs';
 import { registerUser } from './_handlers/registerUser.mjs';
-// import { getUser, getUserCollection} from './_handlers/getUser.mjs';
-// import { updateUser } from './_handlers/updateUser.mjs';
+import { getUser, getUserCollection} from './_handlers/getUser.mjs';
+import { updateUser } from './_handlers/updateUser.mjs';
 // import { deleteUser } from './_handlers/deleteUser.mjs';
 
 // END HANDLERS
 
 // API ROUTES (DO NOT MODIFY)
 app.post('/api/login', loginUser);
-// app.post('/api/logout', logoutUser);
+app.post('/api/logout', logoutUser);
 app.post('/api/register', registerUser);
 // app.get('/api/user/:id', getUserCollection);
-// app.get('/api/user/:id', getUser);
-// app.put('/api/user/:id', updateUser);
+app.get('/api/user/:id', getUser);
+app.put('/api/user/:id', updateUser);
 // app.delete('/api/user/:id', deleteUser);
 //END API ROUTES
 
   
+app.get('/api/session', (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ message: 'Not logged in' });
+  }
+  res.json({ userId: req.session.userId });
+});
+
 // HTML PAGE ROUTES
 
 // // Serve static files from the client directory
