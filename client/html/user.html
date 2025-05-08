@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile Page</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/user.css">
 </head>
 <body>
   <h2>Welcome to your Profile</h2>
@@ -46,8 +46,10 @@
       }
 
       const { userId } = await sessionRes.json();
+      currentUserId = userId;  // Add this line
       const userRes = await fetch(`/api/user/${userId}`);
       const user = await userRes.json();
+      
 
       userInfoDiv.innerHTML = `
         <p><strong>Name:</strong> ${user.name || 'N/A'}</p>

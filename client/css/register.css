@@ -18,18 +18,18 @@ h2 {
     font-size: 6vw;
 }
 
-.center-box {
-    text-align: left;
-} 
-
 button {
     margin-right: 2vw;
 } 
 
-.button-container {
+form {
+    height: 70vh;
+    text-align: left;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+}
 
-} 
+input, textarea {
+    margin-bottom: 2vh;
+}
 

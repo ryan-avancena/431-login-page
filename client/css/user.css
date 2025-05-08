@@ -1,0 +1,9 @@
+* {
+    font-size: 32px;
+    font-family: 'Arial';
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+}
