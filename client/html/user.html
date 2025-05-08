@@ -15,7 +15,7 @@
 
   <form id="updateForm" style="display:none;">
     <label>
-      Name: <input type="text" id="name" name="name" />
+      Name: <input type="text" id="first_name" name="name" />
     </label><br><br>
 
     <label>
@@ -23,7 +23,7 @@
     </label><br><br>
 
     <label>
-      Bio: <input type="text" id="bio" name="bio" />
+      Bio: <input type="text" id="biography" name="bio" />
     </label><br><br>
 
     <button type="submit">Update Profile</button>
@@ -41,7 +41,7 @@
     async function loadUser() {
       const sessionRes = await fetch('/api/session');
       if (sessionRes.status === 401) {
-        window.location.href = '/login';
+        window.location.href = '/';
         return;
       }
 
@@ -52,16 +52,16 @@
       
 
       userInfoDiv.innerHTML = `
-        <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
+        <p><strong>Name:</strong> ${user.first_name || 'N/A'}</p>
         <p><strong>Email:</strong> ${user.email}</p>
-        <p><strong>Bio:</strong> ${user.bio || 'N/A'}</p>
+        <p><strong>Bio:</strong> ${user.biography || 'N/A'}</p>
         <p>Do you want to update your info?</p>
       `;
 
       // Pre-fill the form
-      document.getElementById('name').value = user.name || '';
+      document.getElementById('first_name').value = user.first_name || '';
       document.getElementById('email').value = user.email;
-      document.getElementById('bio').value = user.bio || '';
+      document.getElementById('biography').value = user.biography || '';
     }
 
     editBtn.addEventListener('click', () => {
@@ -70,17 +70,15 @@
 
     document.getElementById('updateForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('name').value;
-      const bio = document.getElementById('bio').value;
-      
-      // const userId = req.session.userId;
-
+      const first_name = document.getElementById('first_name').value;
+      const biography = document.getElementById('biography').value;
+    
       const res = await fetch(`/api/user/${currentUserId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, bio })
+        body: JSON.stringify({ first_name, biography }) // use schema field names
       });
-
+    
       const result = await res.json();
       alert(result.message);
       loadUser();  // Refresh info
