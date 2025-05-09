@@ -2,7 +2,7 @@ import User from '../models/User.mjs';
 
 export const updateUser = async (req, res) => {
   const userId = req.session.userId;
-  console.log(userId)
+  // console.log(userId)
   if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
   const updateFields = req.body;

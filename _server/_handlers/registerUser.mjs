@@ -1,10 +1,32 @@
-// /server/_handlers/registerUser.mjs
-import User from '../models/User.mjs';
-import bcrypt from 'bcryptjs';
 import multer from 'multer';
+import { join, resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import User from '../models/User.mjs';  // Your model import
+import bcrypt from 'bcryptjs';
+import fs from 'fs';
 
-// Configure multer in-memory storage
-const upload = multer({ storage: multer.memoryStorage() });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Ensure the 'client/images' folder exists, create it if not
+const imagesPath = resolve(__dirname, '..', '..', 'client', 'images');  // Use resolve to get the absolute path from the root
+if (!fs.existsSync(imagesPath)) {
+  fs.mkdirSync(imagesPath, { recursive: true });
+}
+
+
+// Set up multer storage
+const storage = multer.diskStorage({
+  destination: imagesPath,  // Use the path that we've ensured exists
+  filename: (req, file, cb) => {
+    const ext = file.originalname.split('.').pop();
+    cb(null, `${Date.now()}.${ext}`);
+  },
+});
+
+
+const upload = multer({ storage });
 
 // Wrap your handler in a function that calls multer manually
 export const registerUser = (req, res) => {
@@ -38,7 +60,7 @@ export const registerUser = (req, res) => {
         birthday: birthday ? new Date(birthday) : undefined,
         biography,
         favorite_number: favorite_number ? parseInt(favorite_number) : undefined,
-        profile_img: req.file ? req.file.buffer : undefined,
+        profile_img: req.file ? `/images/${req.file.filename}` : undefined,  // ✅ Add this line
       });
 
       await newUser.save();

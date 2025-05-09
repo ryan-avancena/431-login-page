@@ -1,4 +1,3 @@
-<!-- /client/html/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,50 +7,52 @@
   <link rel="stylesheet" href="css/register.css">
 </head>
 <body>
-  <h1>Register</h1>
   
-  <form id="register-form" enctype="multipart/form-data">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    
-    <label for="first_name">First Name:</label>
-    <input type="text" id="first_name" name="first_name" required>
-    
-    <label for="last_name">Last Name:</label>
-    <input type="text" id="last_name" name="last_name" required>
-    
-    <label for="birthday">Birthday:</label>
-    <input type="date" id="birthday" name="birthday">
-    
-    <label for="biography">Biography:</label>
-    <textarea id="biography" name="biography"></textarea>
-    
-    <label for="favorite_number">Favorite Number:</label>
-    <input type="number" id="favorite_number" name="favorite_number">
-    
-    <label for="profile_img">Profile Picture (Optional):</label>
-    <input type="file" id="profile_img" name="profile_img" accept="image/*">
+  <div class="register-box">
+    <h1>REGISTER FORM</h1>
+    <form id="register-form" enctype="multipart/form-data">
+      <label for="username">username</label>
+      <input type="text" id="username" name="username" required>
 
-    <button type="submit">Register</button>
-  </form>
-  
+      <label for="password">password</label>
+      <input type="password" id="password" name="password" required>
+
+      <label for="email">email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="first_name">first name</label>
+      <input type="text" id="first_name" name="first_name" required>
+
+      <label for="last_name">last name</label>
+      <input type="text" id="last_name" name="last_name" required>
+
+      <label for="birthday">birthday</label>
+      <input type="date" id="birthday" name="birthday">
+
+      <label for="biography">bio</label>
+      <textarea id="biography" name="biography" rows="3" style="grid-column: span 2;"></textarea>
+
+      <label for="favorite_number">favorite number</label>
+      <input type="number" id="favorite_number" name="favorite_number">
+
+      <label for="profile_img">profile picture (optional)</label>
+      <input type="file" id="profile_img" name="profile_img" accept="image/jpeg">
+
+      <button type="submit">REGISTER</button>
+    </form>
+  </div>
+
   <p id="output"></p>
 
   <script>
     document.getElementById('register-form').addEventListener('submit', async (event) => {
       event.preventDefault();
       
-      const formData = new FormData(event.target);
+      const formData = new FormData(event.target); // Collect form data including the profile image
 
       const res = await fetch('/api/register', {
         method: 'POST',
-        body: formData,  // Send the form data including the profile image as multipart/form-data
+        body: formData,  // Send the form data (including the image) as multipart/form-data
       });
 
       const result = await res.json();

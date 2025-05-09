@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profile Page</title>
-  <link rel="stylesheet" href="css/user.css">
+  <link rel="stylesheet" href="css/user.css" />
 </head>
 <body>
   <h2>Welcome to your Profile</h2>
 
-  <div id="userInfo">
-    <p>Loading user info...</p>
-  </div>
+  <div id="profile-pic-container">
+    <img src="{{user.profile_img}}" alt="Profile picture" />
+  </div> 
 
-  <form id="updateForm" style="display:none;">
+  <form id="updateForm" enctype="multipart/form-data">
     <label>
-      Name: <input type="text" id="first_name" name="name" />
+      Username: <input type="text" id="username" name="username" disabled />
     </label><br><br>
 
     <label>
@@ -23,17 +23,36 @@
     </label><br><br>
 
     <label>
-      Bio: <input type="text" id="biography" name="bio" />
+      First Name: <input type="text" id="first_name" name="first_name" disabled />
     </label><br><br>
 
-    <button type="submit">Update Profile</button>
+    <label>
+      Last Name: <input type="text" id="last_name" name="last_name" disabled />
+    </label><br><br>
+
+    <label>
+      Birthday: <input type="date" id="birthday" name="birthday" disabled />
+    </label><br><br>
+
+    <label>
+      Bio: <textarea id="biography" name="biography" rows="3" disabled></textarea>
+    </label><br><br>
+
+    <label>
+      Favorite Number: <input type="number" id="favorite_number" name="favorite_number" disabled />
+    </label><br><br>
+
+    <label>
+      Profile Picture: <input type="file" id="profile_img" name="profile_img" accept="image/*" disabled />
+    </label><br><br>
+
+    <button type="submit" id="submitBtn" disabled>Update Profile</button>
   </form>
 
   <button id="editBtn">Edit Profile</button>
   <button id="logoutBtn">Logout</button>
 
   <script>
-    const userInfoDiv = document.getElementById('userInfo');
     const updateForm = document.getElementById('updateForm');
     const editBtn = document.getElementById('editBtn');
     let currentUserId = null;
@@ -46,43 +65,50 @@
       }
 
       const { userId } = await sessionRes.json();
-      currentUserId = userId;  // Add this line
+      currentUserId = userId;
+
       const userRes = await fetch(`/api/user/${userId}`);
       const user = await userRes.json();
-      
 
-      userInfoDiv.innerHTML = `
-        <p><strong>Name:</strong> ${user.first_name || 'N/A'}</p>
-        <p><strong>Email:</strong> ${user.email}</p>
-        <p><strong>Bio:</strong> ${user.biography || 'N/A'}</p>
-        <p>Do you want to update your info?</p>
-      `;
-
-      // Pre-fill the form
+      document.getElementById('username').value = user.username || '';
+      document.getElementById('email').value = user.email || '';
       document.getElementById('first_name').value = user.first_name || '';
-      document.getElementById('email').value = user.email;
+      document.getElementById('last_name').value = user.last_name || '';
+      document.getElementById('birthday').value = user.birthday ? user.birthday.split('T')[0] : '';
       document.getElementById('biography').value = user.biography || '';
+      document.getElementById('favorite_number').value = user.favorite_number || '';
+      if (user.profile_img) {
+        document.getElementById('profile-pic').src = user.profile_img;  // Update profile picture
+      }
     }
 
     editBtn.addEventListener('click', () => {
-      updateForm.style.display = 'block';
+      const editableFields = [
+        'first_name', 'last_name', 'birthday',
+        'biography', 'favorite_number', 'profile_img'
+      ];
+      editableFields.forEach(id => document.getElementById(id).disabled = false);
+      document.getElementById('submitBtn').disabled = false;
     });
 
-    document.getElementById('updateForm').addEventListener('submit', async (e) => {
+    updateForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const first_name = document.getElementById('first_name').value;
-      const biography = document.getElementById('biography').value;
-    
+
+      const formData = new FormData(updateForm);
+
       const res = await fetch(`/api/user/${currentUserId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ first_name, biography }) // use schema field names
+        body: formData,
       });
-    
+
       const result = await res.json();
       alert(result.message);
-      loadUser();  // Refresh info
-      updateForm.style.display = 'none';
+      await loadUser();
+
+      // Disable fields again
+      ['first_name', 'last_name', 'birthday', 'biography', 'favorite_number', 'profile_img']
+        .forEach(id => document.getElementById(id).disabled = true);
+      document.getElementById('submitBtn').disabled = true;
     });
 
     document.getElementById('logoutBtn').addEventListener('click', async () => {

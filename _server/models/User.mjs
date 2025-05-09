@@ -34,8 +34,8 @@ const userSchema = new mongoose.Schema({
   favorite_number: {
     type: Number,
   },
-  profile_img: {
-    type: Buffer,  // Store the profile image as binary data
+  profile_img: { 
+    type: String 
   },
 });
 
