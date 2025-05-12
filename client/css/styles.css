@@ -17,66 +17,76 @@ body {
 }
 
 h2 {
-    font-size: 8vw;
+    font-size: 3rem; /* better for responsiveness */
 }
 
-p, label {
-    font-size: 2.5rem;
-}
-
-input::placeholder {
-    padding: 1rem;
-    font-size: 2.5rem;
-}
-
-input[type="email"],input[type="password"] {
+input[type="email"],
+input[type="password"] {
     border: none;
-    border-bottom: 2px solid #fcfcfc00; /* black underline */
+    border-bottom: 2px solid transparent;
     color: white;
     outline: none;
-    padding: 5px 0;
-    font-size: 2.5rem;
+    padding: 0.5rem 0;
+    font-size: 1.2rem;
     background-color: transparent;
-    width: 12vw; /* adjust as needed */
-    height: 2.5vh;
+    width: 100%;
+    max-width: 300px;
 
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
 }
 
-input[type="email"]:focus, input[type="password"]:focus {
-    border-bottom: 2px solid #fcfcfc; /* blue underline on focus */
-    color: white;
-    font-size: 2.5rem;
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-bottom: 2px solid #fcfcfc;
+    font-size: 1.2rem;
+}
+
+input::placeholder {
+    font-size: 1rem;
+    color: #ccc;
 }
 
 input:-webkit-autofill,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:hover {
-    -webkit-box-shadow: 0 0 0px 1000px rgb(34, 34, 34) inset; /* match your background */
+    -webkit-box-shadow: 0 0 0px 1000px rgb(34, 34, 34) inset;
     -webkit-text-fill-color: white;
     transition: background-color 5000s ease-in-out 0s;
+    font-size: 1.2rem !important;
+    background-color: transparent !important;
 }
-  
 
 .center-box {
+    margin-top: 5vh;
     text-align: left;
-} 
-
-button {
-    width: 10vw;
-    height: 6vh;
-    margin-right: 2vw;
-    border-radius: 20px;
-    font-size: 2rem;
-} 
-
+}
 
 .button-container {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 2vh;
-} 
+}
 
+button {
+    width: 150px;
+    height: 50px;
+    margin-right: 1rem;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    outline: none;
+}
+
+button:hover {
+    transition: background-color 0.3s, color 0.3s;
+    color: white;
+    background-color: rgb(19, 19, 19);
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4); /* subtle white glow */
+}

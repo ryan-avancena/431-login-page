@@ -10,7 +10,7 @@
   <h2>Welcome to your Profile</h2>
 
   <div id="profile-pic-container">
-    <img src="{{user.profile_img}}" alt="Profile picture" />
+    <img id="profile_img_display" src="" alt="Profile picture" width="150" />
   </div> 
 
   <form id="updateForm" enctype="multipart/form-data">
@@ -43,7 +43,7 @@
     </label><br><br>
 
     <label>
-      Profile Picture: <input type="file" id="profile_img" name="profile_img" accept="image/*" disabled />
+      Profile Picture: <input type="file" id="profile_img_input" name="profile_img" accept="image/jpeg" disabled />
     </label><br><br>
 
     <button type="submit" id="submitBtn" disabled>Update Profile</button>
@@ -55,6 +55,8 @@
   <script>
     const updateForm = document.getElementById('updateForm');
     const editBtn = document.getElementById('editBtn');
+    const profileImgInput = document.getElementById('profile_img_input');
+    const profileImgDisplay = document.getElementById('profile_img_display');
     let currentUserId = null;
 
     async function loadUser() {
@@ -77,24 +79,43 @@
       document.getElementById('birthday').value = user.birthday ? user.birthday.split('T')[0] : '';
       document.getElementById('biography').value = user.biography || '';
       document.getElementById('favorite_number').value = user.favorite_number || '';
-      if (user.profile_img) {
-        document.getElementById('profile-pic').src = user.profile_img;  // Update profile picture
-      }
+      profileImgDisplay.src = user.profile_img || '';
     }
 
     editBtn.addEventListener('click', () => {
       const editableFields = [
         'first_name', 'last_name', 'birthday',
-        'biography', 'favorite_number', 'profile_img'
+        'biography', 'favorite_number', 'profile_img_input'
       ];
-      editableFields.forEach(id => document.getElementById(id).disabled = false);
+
+      editableFields.forEach(id => {
+        const el = document.getElementById(id);
+        el.disabled = false;
+        if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+          el.classList.add('editable');
+        }
+      });
+
       document.getElementById('submitBtn').disabled = false;
+    });
+
+    profileImgInput.addEventListener('change', () => {
+      const file = profileImgInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => profileImgDisplay.src = e.target.result;
+        reader.readAsDataURL(file);
+      }
     });
 
     updateForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const usernameInput = document.getElementById('username');
+      usernameInput.disabled = false;
+
       const formData = new FormData(updateForm);
+      usernameInput.disabled = true;
 
       const res = await fetch(`/api/user/${currentUserId}`, {
         method: 'PUT',
@@ -106,7 +127,7 @@
       await loadUser();
 
       // Disable fields again
-      ['first_name', 'last_name', 'birthday', 'biography', 'favorite_number', 'profile_img']
+      ['first_name', 'last_name', 'birthday', 'biography', 'favorite_number', 'profile_img_input']
         .forEach(id => document.getElementById(id).disabled = true);
       document.getElementById('submitBtn').disabled = true;
     });

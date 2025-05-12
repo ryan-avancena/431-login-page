@@ -13,6 +13,7 @@ app.use(express.json());
 // app.use(express.static(join(__dirname, '_server')));
 
 /* added by me */
+import path from 'path';
 import session from 'express-session';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -44,9 +45,10 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const filename = `${Date.now()}.jpg`; // Ensure the file is saved with a .jpg extension
-    cb(null, filename);
-  }
+    const ext = file.originalname.split('.').pop();
+    const safeUsername = req.body.username?.replace(/[^\w\-]/g, '_') || 'user';
+    cb(null, `${safeUsername}.${ext}`);
+  },
 });
 
 const upload = multer({ 
@@ -61,14 +63,22 @@ const upload = multer({
 });
 
 // Profile image upload route
-app.post('/api/upload-profile-image', upload.single('profile_img'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded' });
-  }
-  // The uploaded file is saved in the 'uploads' folder
-  const imagePath = `/images/${req.file.filename}`;
-  console.log(imagePath)
-  res.status(200).json({ message: 'Profile image uploaded successfully', imagePath });
+app.post('/api/upload-profile-image', (req, res, next) => {
+  upload.single('profile_img')(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      // Multer-specific errors
+      return res.status(400).json({ message: err.message });
+    } else if (err) {
+      // Other errors
+      return res.status(400).json({ message: err.message });
+    } else if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const imagePath = `/images/${req.file.filename}`;
+    console.log(imagePath);
+    return res.status(200).json({ message: 'Profile image uploaded successfully', imagePath });
+  });
 });
 
 /* break */
@@ -100,7 +110,6 @@ import { updateUser } from './_handlers/updateUser.mjs';
 
 // END HANDLERS
 
-
 // API ROUTES (DO NOT MODIFY)
 app.post('/api/login', loginUser);
 app.post('/api/logout', logoutUser);
@@ -127,8 +136,7 @@ app.get('/api/session', (req, res) => {
 // // This is setup so your "client" folder is next to your "_server" folder and not inside it
 const clientPath = join(__dirname, '..', 'client');
 app.use(express.static(clientPath));
-app.use('/client-images', express.static(join(__dirname, '..', 'client', 'images')));
-console.log('Serving static images from:', join(__dirname, '..', 'client', 'images'));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Default "index" route
 app.get('/', (req, res) => {

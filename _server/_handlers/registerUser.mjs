@@ -21,7 +21,8 @@ const storage = multer.diskStorage({
   destination: imagesPath,  // Use the path that we've ensured exists
   filename: (req, file, cb) => {
     const ext = file.originalname.split('.').pop();
-    cb(null, `${Date.now()}.${ext}`);
+    const safeUsername = req.body.username?.replace(/[^\w\-]/g, '_') || 'user';
+    cb(null, `${safeUsername}.${ext}`);
   },
 });
 
@@ -60,7 +61,7 @@ export const registerUser = (req, res) => {
         birthday: birthday ? new Date(birthday) : undefined,
         biography,
         favorite_number: favorite_number ? parseInt(favorite_number) : undefined,
-        profile_img: req.file ? `/images/${req.file.filename}` : undefined,  // ✅ Add this line
+        profile_img: req.file ? `/images/${req.file.filename}` : undefined
       });
 
       await newUser.save();

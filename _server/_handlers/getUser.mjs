@@ -5,7 +5,8 @@ export const getUser = async (req, res) => {
   if (!userId) return res.status(401).json({ message: 'Not authenticated' });
 
   try {
-    const user = await User.findById(userId).select('-password -profile_img');
+    const user = await User.findById(userId).select('-password');
+    user.profile_img = `/images/${user.username}.jpg`;
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: 'Error retrieving user data.' });

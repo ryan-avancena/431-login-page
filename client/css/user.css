@@ -1,9 +1,149 @@
 * {
-    font-size: 32px;
-    font-family: 'Arial';
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
 }
 
 body {
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
+    background-color: rgb(34, 34, 34);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    gap: 2rem;
+    overflow-x: hidden;
+}
+
+h2 {
+    font-size: 4rem;
+    text-align: center;
+}
+
+#profile-pic-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+#profile_img_display {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* Form layout */
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 800px;
+    width: 100%;
+    background-color: #1e1e1e;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.5rem;
+    color: #ddd;
+    gap: 4px;
+}
+
+form input,
+form textarea {
+    font-size: 1.5rem;
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background-color: #222;
+    color: white;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+form input:focus,
+form textarea:focus {
+    border-color: #aaa;
+    outline: none;
+    background-color: #2a2a2a;
+}
+
+form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Autofill support */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #222 inset;
+    -webkit-text-fill-color: white;
+}
+
+/* Full-width elements */
+form button {
+    grid-column: span 2;
+    font-size: 1.8rem;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #666;
+}
+
+/* Edit & Logout buttons */
+#editBtn,
+#logoutBtn {
+    font-size: 1.6rem;
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input.editable,
+textarea.editable {
+    background-color: #2a2a2a;
+    border-color: #888;
+}
+
+#editBtn:hover,
+#logoutBtn:hover {
+    background-color: #777;
+}
+
+/* Responsive fallback */
+@media (max-width: 600px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+
+    form button {
+        grid-column: span 1;
+    }
+
+    h2 {
+        font-size: 3rem;
+    }
 }
